@@ -1,11 +1,11 @@
 package uk.uclan.donationsplatform.beans;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.sql.ast.tree.predicate.BooleanExpressionPredicate;
 
 import java.util.List;
 
@@ -33,5 +33,6 @@ public class Requester {
     private Boolean isAdmin;
 
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Advertisement> advertisements;
 }
