@@ -3,7 +3,7 @@ window.onload = () => {
 }
 
 function getAllAds()    {
-    fetch("/ad")
+    fetch(`/ad`)
         .then(response => {
             if(response.status !== 200) {
                 throw new Error(response.statusText)
@@ -14,11 +14,30 @@ function getAllAds()    {
         .then(data => {
             let table = document.getElementById("adsTable");
 
-            table.innerHTML = `<tr><th>ID</th><th>Description</th><th>Picture</th><th>Wallet</th></tr>`
+            table.innerHTML = `<tr><th>Description</th><th>Picture</th><th>Details</th></tr>`
 
             data.forEach(ad => {
-                table.innerHTML += `<tr><td>${ad.adId}</td><td>${ad.description}</td><td>${ad.picture}</td><td>${ad.wallet}</td></tr>`
+                table.innerHTML += `<tr><td>${ad.description}</td><td>${ad.picture}</td><td><button onclick="getAdDetails(${ad.adId})">Details</button></td></tr>`
             })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+}
+
+function getAdDetails(id) {
+    fetch(`/ad/${id}`)
+        .then(response => {
+            if(response.status !== 200) {
+                throw new Error(response.statusText)
+            }
+
+            return response.json()
+        })
+        .then(data => {
+            let div = document.getElementById("adDetails")
+
+            div.innerHTML = `<p>ID: ${data.adId} | Wallet: ${data.wallet}</p>`
         })
         .catch(err => {
             console.log(err)
