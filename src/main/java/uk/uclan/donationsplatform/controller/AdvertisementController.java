@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uk.uclan.donationsplatform.beans.Advertisement;
+import uk.uclan.donationsplatform.beans.Requester;
 import uk.uclan.donationsplatform.repositories.AdvertisementRepository;
 import uk.uclan.donationsplatform.repositories.RequesterRepository;
 
@@ -57,7 +58,9 @@ public class AdvertisementController {
     }
 
     @GetMapping("/ad/create")
-    public String showAdCreatePage()    {
+    public String showAdCreatePage(Model model, Principal principal)    {
+        model.addAttribute("currentRequester", requesterRepository.findByUsername(principal.getName()).get());
+
         return "adCreate";
     }
 
@@ -80,6 +83,12 @@ public class AdvertisementController {
     @PostMapping("/api/ad/create")
     public String createAd(@ModelAttribute Advertisement advertisement, @RequestParam MultipartFile file, Principal principal)    {
         try{
+            Requester requester = requesterRepository.findByUsername(principal.getName()).get();
+
+            if((!requester.isVerified())) {
+                throw new Exception();
+            }
+
             advertisement.setPicture(file.getBytes());
             advertisement.setRequester(requesterRepository.findByUsername(principal.getName()).get());
 

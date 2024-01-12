@@ -2,14 +2,11 @@ package uk.uclan.donationsplatform.beans;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +26,15 @@ public class Requester implements UserDetails {
 
     @Setter
     private String password;
+
+    @Lob
+    @Getter
+    @Setter
+    private byte[] verifyDocument;
+
+    @Getter
+    @Setter
+    private boolean isVerified = false;
 
     @Setter
     @OneToMany(fetch = FetchType.EAGER)

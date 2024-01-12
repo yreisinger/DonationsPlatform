@@ -125,39 +125,3 @@ footer {
     text-align: center;
     margin-top: 20px;
 }
-
-.form-group {
-    margin-top: 262px;
-    margin-bottom: 262px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 10px;
-}
-
-.form-group input {
-    width: 200px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.form-group button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 10px;
-    width: 100px;
-}
-
-.form-group button:hover {
-    background-color: #45a049;
-}

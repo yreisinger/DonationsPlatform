@@ -52,7 +52,7 @@
   </header>
 
   <main class="content">
-    <img class="card-img-top" th:src="@{${'/display/picture?id=' + currentAd.adId}}">
+    <img class="card-img-top" th:src="@{${'/display/picture?id=' + currentAd.adId}}" style="width: 1500px; height: 500px">
     <div class="button-container">
       <p th:text="${currentAd.wallet}"></p>
       <a href="#" class="button">Donate</a>

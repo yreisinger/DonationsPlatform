@@ -52,16 +52,36 @@
   </header>
 
   <main class="content">
-    <form class="form-group" method="post" th:action="@{/api/ad/create}" th:object="${advertisement}" enctype="multipart/form-data">
+    <div th:if="${currentRequester.verified == true}">
       <h2>Create AD</h2>
-      <input id="description" class="form-control mt-3" placeholder="Description" th:field="*{description}" required>
+      <div class="col-md-6 offset-md-3 mt-5">
+        <form class="form-group" method="post" th:action="@{/api/ad/create}" th:object="${advertisement}" enctype="multipart/form-data" target="_blank">
+          <div class="form-group">
+            <label for="description">Description</label>
+            <input type="text" name="description" class="form-control" id="description" th:field="*{description}" placeholder="Enter the description" required>
+          </div>
+          <div class="form-group">
+            <label for="wallet">Wallet</label>
+            <input type="text" name="wallet" class="form-control" id="wallet"  th:field="*{wallet}" placeholder="Enter wallet" required>
+          </div>
+          <hr>
+          <div class="form-group mt-3">
+            <label class="mr-2">Upload your Picture</label>
+            <input type="file" name="file" required>
+          </div>
+          <hr>
+          <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+      </div>
 
-      <input id="wallet" class="form-control mt-2" placeholder="Wallet" th:field="*{wallet}" required>
 
-      <input class="form-control mt-2" id="file" placeholder="Picture" type="file" name="file">
-
-      <button type="submit">Create AD</button>
-    </form>
+    </div>
+    <div th:unless="${currentRequester.isVerified() == true}">
+      <form class="form-group" method="get" th:action="@{/verify}">
+        <h4>You must verify yourself to be allowed to post</h4>
+        <button type="submit" class="btn btn-success">Verify</button>
+      </form>
+    </div>
   </main>
 
   <footer class="bg-body-tertiary text-center text-lg-start fixed-bottom">

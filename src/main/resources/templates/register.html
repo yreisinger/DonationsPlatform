@@ -12,6 +12,31 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <style>
+    .login-form {
+      width: 340px;
+      margin: 50px auto;
+      font-size: 15px;
+    }
+    .login-form form {
+      margin-bottom: 15px;
+      background: #f7f7f7;
+      box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+      padding: 30px;
+    }
+    .login-form h2 {
+      margin: 0 0 15px;
+    }
+    .form-control, .btn {
+      min-height: 38px;
+      border-radius: 2px;
+    }
+    .btn {
+      font-size: 15px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -39,14 +64,21 @@
   </header>
 
   <main class="content">
-    <form class="form-group" method="post" th:action="@{/auth/register}" th:object="${administrationDTO}">
-      <h2>Register</h2>
-      <input id="username" class="form-control mt-3" placeholder="Username" th:field="*{username}" required>
-
-      <input type="password" class="form-control mt-2" placeholder="Password" id="password" th:field="*{password}" required>
-
-      <button type="submit">Register</button>
-    </form>
+    <div class="login-form">
+      <form method="post" th:action="@{/auth/register}" th:object="${administrationDTO}">
+        <h2 class="text-center">Register</h2>
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Username" name="username" th:field="*{username}" required>
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" placeholder="Password" name="password" th:field="*{password}" required>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-success btn-block">Register me</button>
+        </div>
+      </form>
+      <p class="text-center"><a class="text-success" th:href="@{/login}">Log in</a></p>
+    </div>
   </main>
 
   <footer class="bg-body-tertiary text-center text-lg-start fixed-bottom">
