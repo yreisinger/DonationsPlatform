@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/style.css}" />
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand text-white font-weight-bold">BitDonate</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample07" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarsExample07">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/ads}">Advertisements</a>
+                        </li>
+                    </ul>
+                    <form class="form-inline my-2 my-md-0">
+                        <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/login}">Login</a>
+                        <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/register}">Register</a>
+                        <div sec:authorize="isAuthenticated()" class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-success" href="#" id="dropdown07" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+                            <div class="dropdown-menu" aria-labelledby="dropdown07">
+                                <a class="dropdown-item" th:href="@{/inventory}">Inventory</a>
+                                <a class="dropdown-item" th:href="@{/ad/create}">Create AD</a>
+                                <a class="dropdown-item" th:href="@{/admin}" sec:authorize="hasAuthority('ADMIN')">Admin</a>
+                            </div>
+                        </div>
+                    </form>
+                    <a sec:authorize="isAuthenticated()" class="text-success" href="javascript: document.logoutForm.submit()">Sign out</a>
+                    <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+                        <input hidden type="submit" value="Sign Out" />
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="content">
+        <h2>Your Advertisements</h2>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4 py-2" th:each="i : ${inventory}">
+                    <div class="card h-100 text-black">
+                        <div class="card-body">
+                            <img class="card-img-top" th:src="@{${'/display/picture?id=' + i.adId}}">
+                            <h3 class="card-title" th:text="${i.description}"></h3>
+                            <a class="btn btn-outline-dark" th:href="@{'/ad/' + ${i.adId}}">Visit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-body-tertiary text-center text-lg-start fixed-bottom">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            &copy; 2023 BitDonate. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>

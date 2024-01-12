@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Getter
@@ -13,19 +14,24 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Advertisement {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer adId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "req_id")
     @JsonBackReference
     private Requester requester;
 
     private String description;
 
-    private String picture;
+    @Lob
+    private byte[] picture;
 
     private String wallet;
+
+    @Override
+    public String toString() {
+        return "" + adId;
+    }
 }

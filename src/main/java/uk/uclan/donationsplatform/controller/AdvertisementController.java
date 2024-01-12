@@ -1,36 +1,102 @@
 package uk.uclan.donationsplatform.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import uk.uclan.donationsplatform.beans.Advertisement;
 import uk.uclan.donationsplatform.repositories.AdvertisementRepository;
+import uk.uclan.donationsplatform.repositories.RequesterRepository;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.security.Principal;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/ad")
+@Controller
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class AdvertisementController {
 
     private final AdvertisementRepository advertisementRepository;
 
-    @GetMapping
-    private ResponseEntity<List<Advertisement>> getAllAds() {
-        return ResponseEntity.ok(advertisementRepository.findAll());
+    private final RequesterRepository requesterRepository;
+
+    @ModelAttribute
+    public void setAttributes(Model model) {
+        model.addAttribute("ads", advertisementRepository.findAll());
     }
 
-    @GetMapping("/{id}")
-    private ResponseEntity<Advertisement> getAdDetails(@PathVariable("id") Integer id)   {
+    @ModelAttribute
+    public Advertisement getAdvertisement() {
+        return new Advertisement();
+    }
+
+    @GetMapping
+    public String showHomePage(Model model)    {
+        List<Advertisement> allAds = advertisementRepository.findAll();
+
+        Collections.reverse(allAds);
+
+        model.addAttribute("latestAds", allAds.stream().limit(3).toList());
+
+        return "home";
+    }
+
+    @GetMapping("/ads")
+    public String showAdsPage() {
+        return "adList";
+    }
+
+    @GetMapping("/ad/create")
+    public String showAdCreatePage()    {
+        return "adCreate";
+    }
+
+    @GetMapping("/ad/{id}")
+    public String showAdDetails(Model model, @PathVariable("id") Integer id)   {
         if(advertisementRepository.findById(id).isPresent())  {
-            return ResponseEntity.ok(advertisementRepository.findById(id).get());
+            model.addAttribute("currentAd", advertisementRepository.findById(id).get());
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return "adDetails";
+    }
+
+    @GetMapping("/inventory")
+    public String showInventory(Model model, Principal principal)   {
+        model.addAttribute("inventory", advertisementRepository.findAllByRequester(requesterRepository.findByUsername(principal.getName()).get()));
+
+        return "inventory";
+    }
+
+    @PostMapping("/api/ad/create")
+    public String createAd(@ModelAttribute Advertisement advertisement, @RequestParam MultipartFile file, Principal principal)    {
+        try{
+            advertisement.setPicture(file.getBytes());
+            advertisement.setRequester(requesterRepository.findByUsername(principal.getName()).get());
+
+            advertisementRepository.save(advertisement);
+
+            return "redirect:/";
+        }catch (Exception e)    {
+            return "adCreate";
+        }
+    }
+
+    @GetMapping("/display/picture")
+    public ResponseEntity<byte[]> displayPicture(@RequestParam("id") int id) throws SQLException {
+        Advertisement advertisement = advertisementRepository.findById(id).get();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + advertisement.getWallet() + "\"")
+                .body(advertisement.getPicture());
     }
 }

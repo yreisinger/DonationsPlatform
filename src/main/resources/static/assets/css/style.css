@@ -1,0 +1,163 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background-color: #333;
+    color: white;
+    width: 100%;
+    padding: 15px 0;
+}
+
+.navbar ul {
+    display: flex;
+    justify-content: center;
+    list-style-type: none;
+    margin: 0px;
+    padding: 0;
+}
+
+.navbar ul li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.navbar ul li a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.register, .login {
+    background-color: white;
+    color: black;
+    font-size: 20px;
+    cursor: pointer;
+    height: 48px;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.content {
+    padding: 20px;
+    text-align: center;
+}
+
+.info {
+    padding: 20px;
+    background-color: #f2f2f2;
+}
+
+.ads {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ad {
+    width: 30%;
+}
+
+.carousel {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0 150px;
+    box-sizing: border-box;
+}
+
+.carousel .carousel-item {
+    scroll-snap-align: start;
+    flex: 0 0 300px;
+    margin-right: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+.carousel .carousel-item img {
+    width: 300px;
+    height: 300px;
+}
+
+.container {
+    padding: 20px;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.button:hover {
+    background-color: #555;
+}
+
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+    display: block;
+    justify-content: center;
+}
+
+.description-container  {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-top: 262px;
+    margin-bottom: 262px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.form-group input {
+    width: 200px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-group button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    width: 100px;
+}
+
+.form-group button:hover {
+    background-color: #45a049;
+}
