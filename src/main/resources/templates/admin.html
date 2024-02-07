@@ -7,84 +7,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin</title>
     <link rel="stylesheet" type="text/css" th:href="@{/assets/css/style.css}" />
-
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand text-white font-weight-bold">BitDonate</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample07" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarsExample07">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/ads}">Advertisements</a>
-                    </li>
-                </ul>
-                <form class="form-inline my-2 my-md-0">
-                    <div sec:authorize="isAuthenticated()" class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-success" href="#" id="dropdown07" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
-                        <div class="dropdown-menu" aria-labelledby="dropdown07">
-                            <a class="dropdown-item" th:href="@{/inventory}">Inventory</a>
-                            <a class="dropdown-item" th:href="@{/ad/create}">Create AD</a>
-                            <a class="dropdown-item" th:href="@{/admin}" sec:authorize="hasAuthority('ADMIN')">Admin</a>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand text-white font-weight-bold">BitDonate</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbar">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/ads}">Advertisements</a>
+                        </li>
+                    </ul>
+                    <form class="form-inline my-2 my-md-0">
+                        <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/login}">Login</a>
+                        <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/register}">Register</a>
+                        <div sec:authorize="isAuthenticated()" class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-success" href="#" id="dd" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+                            <div class="dropdown-menu" aria-labelledby="dd">
+                                <a class="dropdown-item" th:href="@{/inventory}">Inventory</a>
+                                <a class="dropdown-item" th:href="@{/ad/create}">Create AD</a>
+                                <a class="dropdown-item" th:href="@{/admin}" sec:authorize="hasAuthority('ADMIN')">Admin</a>
+                            </div>
                         </div>
-                    </div>
-                </form>
-                <a sec:authorize="isAuthenticated()" class="text-success" href="javascript: document.logoutForm.submit()">Sign out</a>
-                <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
-                    <input hidden type="submit" value="Sign Out" />
-                </form>
+                    </form>
+                    <a sec:authorize="isAuthenticated()" class="text-success" href="javascript: document.logoutForm.submit()">Sign out</a>
+                    <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+                        <input hidden type="submit" value="Sign Out" />
+                    </form>
+                </div>
             </div>
+        </nav>
+    </header>
+
+    <main class="content">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Username</th>
+                <th scope="col">Rights</th>
+                <th scope="col">Verified</th>
+                <th scope="col">Verify document</th>
+                <th scope="col">Advertisements</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="i : ${requesters}">
+                <th scope="row" th:text="${i.reqId}"></th>
+                <td th:text="${i.username}"></td>
+                <td th:text="${i.authorities}"></td>
+                <td th:text="${i.isVerified()}"></td>
+                <td>
+                    <img th:src="@{${'/display/verifyDocument?id=' + i.reqId}}" style="width: 150px; height: 150px">
+                </td>
+                <td th:text="${i.advertisements}"></td>
+                <td th:if="${i.isVerified() == false}">
+                    <form class="form-group" method="post" th:action="@{'/admin/verify?id=' + ${i.reqId}}" enctype="multipart/form-data">
+                        <button class="btn btn-success" id="verify" type="submit">Verify</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer class="bg-body-tertiary text-center text-lg-start">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            &copy; 2023 BitDonate. All rights reserved.
         </div>
-    </nav>
-</header>
-
-<main class="content">
-    <table class="table">
-        <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Username</th>
-            <th scope="col">Rights</th>
-            <th scope="col">Verified</th>
-            <th scope="col">Verify document</th>
-            <th scope="col">Advertisements</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="i : ${requesters}">
-            <th scope="row" th:text="${i.reqId}"></th>
-            <td th:text="${i.username}"></td>
-            <td th:text="${i.authorities}"></td>
-            <td th:text="${i.isVerified()}"></td>
-            <td>
-                <img th:src="@{${'/display/verifyDocument?id=' + i.reqId}}" style="width: 150px; height: 150px">
-            </td>
-            <td th:text="${i.advertisements}"></td>
-            <td th:if="${i.isVerified() == false}">
-                <form class="form-group" method="post" th:action="@{'/admin/verify?id=' + ${i.reqId}}" enctype="multipart/form-data">
-                    <button class="btn btn-success" type="submit">Verify</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</main>
-
-<footer class="bg-body-tertiary text-center text-lg-start fixed-bottom">
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-        &copy; 2023 BitDonate. All rights reserved.
-    </div>
-</footer>
+    </footer>
 </body>
 </html>

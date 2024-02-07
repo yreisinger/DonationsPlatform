@@ -15,6 +15,7 @@ import uk.uclan.donationsplatform.repositories.AdvertisementRepository;
 import uk.uclan.donationsplatform.repositories.RequesterRepository;
 
 import javax.sql.rowset.serial.SerialBlob;
+import java.io.IOException;
 import java.security.Principal;
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -81,12 +82,17 @@ public class AdvertisementController {
     }
 
     @PostMapping("/api/ad/create")
-    public String createAd(@ModelAttribute Advertisement advertisement, @RequestParam MultipartFile file, Principal principal)    {
-        try{
+    public String createAd(@ModelAttribute Advertisement advertisement, @RequestParam MultipartFile file, Principal principal, Model model) throws IOException {
             Requester requester = requesterRepository.findByUsername(principal.getName()).get();
 
             if((!requester.isVerified())) {
-                throw new Exception();
+                model.addAttribute("showRequesterError", true);
+
+                return "redirect:/ad/create";
+            }else if(advertisement.getDescription().trim().isEmpty() || advertisement.getWallet().trim().isEmpty()) {
+                model.addAttribute("showAdError", true);
+
+                return "redirect:/ad/create";
             }
 
             advertisement.setPicture(file.getBytes());
@@ -95,9 +101,6 @@ public class AdvertisementController {
             advertisementRepository.save(advertisement);
 
             return "redirect:/";
-        }catch (Exception e)    {
-            return "adCreate";
-        }
     }
 
     @GetMapping("/display/picture")

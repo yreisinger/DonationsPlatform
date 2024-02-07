@@ -37,8 +37,8 @@ public class Requester implements UserDetails {
     private boolean isVerified = false;
 
     @Setter
-    @OneToMany(fetch = FetchType.EAGER)
-    private Set<Role> authorities = new HashSet<Role>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> authorities = new HashSet<>();
 
     @Getter
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL)

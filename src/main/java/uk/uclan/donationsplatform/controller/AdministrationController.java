@@ -69,26 +69,24 @@ public class AdministrationController {
     }
 
     @PostMapping("/auth/register")
-    public String registerRequester(@ModelAttribute AdministrationDTO administrationDTO)   {
-        try {
+    public String registerRequester(@ModelAttribute AdministrationDTO administrationDTO, Model model)   {
             Optional<Requester> optionalRequester = requesterRepository.findByUsernameContainingIgnoreCase(administrationDTO.getUsername());
 
-            if(optionalRequester.isPresent())   {
-                throw new Exception("Username already exists");
+            if(optionalRequester.isEmpty())   {
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+                Requester requester = new Requester(administrationDTO.getUsername(), encoder.encode(administrationDTO.getPassword()));
+
+                requester.getAuthorities().add(roleRepository.findRoleByAuthority("CREATOR").get());
+
+                requesterRepository.save(requester);
+
+                return "redirect:/";
+            }else {
+                model.addAttribute("showError", true);
+
+                return "register";
             }
-
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-            Requester requester = new Requester(administrationDTO.getUsername(), encoder.encode(administrationDTO.getPassword()));
-
-            requester.getAuthorities().add(roleRepository.findRoleByAuthority("CREATOR").get());
-
-            requesterRepository.save(requester);
-
-            return "redirect:/";
-        } catch (Exception e) {
-            return "register";
-        }
     }
 
     @PostMapping("/auth/verify")
