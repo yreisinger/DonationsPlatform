@@ -55,7 +55,7 @@
     <div th:if="${currentRequester.isVerified() == true}">
       <h2>Create AD</h2>
       <div class="col-md-6 offset-md-3 mt-5">
-        <form class="form-group" method="post" th:action="@{/api/ad/create}" th:object="${advertisement}" enctype="multipart/form-data" target="_blank">
+        <form class="form-group" method="post" th:action="@{/api/ad/create}" th:object="${advertisement}" enctype="multipart/form-data">
           <div class="form-group">
             <label for="description">Description</label>
             <input type="text" name="description" class="form-control" id="description" th:field="*{description}" placeholder="Enter the description" required>

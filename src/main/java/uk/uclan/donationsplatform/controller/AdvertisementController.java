@@ -83,24 +83,12 @@ public class AdvertisementController {
 
     @PostMapping("/api/ad/create")
     public String createAd(@ModelAttribute Advertisement advertisement, @RequestParam MultipartFile file, Principal principal, Model model) throws IOException {
-            Requester requester = requesterRepository.findByUsername(principal.getName()).get();
+        advertisement.setPicture(file.getBytes());
+        advertisement.setRequester(requesterRepository.findByUsername(principal.getName()).get());
 
-            if((!requester.isVerified())) {
-                model.addAttribute("showRequesterError", true);
+        advertisementRepository.save(advertisement);
 
-                return "redirect:/ad/create";
-            }else if(advertisement.getDescription().trim().isEmpty() || advertisement.getWallet().trim().isEmpty()) {
-                model.addAttribute("showAdError", true);
-
-                return "redirect:/ad/create";
-            }
-
-            advertisement.setPicture(file.getBytes());
-            advertisement.setRequester(requesterRepository.findByUsername(principal.getName()).get());
-
-            advertisementRepository.save(advertisement);
-
-            return "redirect:/";
+        return "redirect:/inventory";
     }
 
     @GetMapping("/display/picture")

@@ -98,7 +98,7 @@ public class AdministrationController {
 
             requesterRepository.save(requester);
 
-            return "home";
+            return "redirect:/";
         }catch (Exception ex)   {
             return "verify";
         }
