@@ -11,49 +11,95 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+        *,
+        ::before,
+        ::after {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #ffffff;
+        }
+    </style>
+
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
-                <a class="navbar-brand text-white font-weight-bold">BitDonate</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbar">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/}">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/ads}">Advertisements</a>
-                        </li>
-                    </ul>
-                    <form class="form-inline my-2 my-md-0">
-                        <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/login}">Login</a>
-                        <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/register}">Register</a>
-                        <div sec:authorize="isAuthenticated()" class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-success" href="#" id="dd" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
-                            <div class="dropdown-menu" aria-labelledby="dd">
-                                <a class="dropdown-item" th:href="@{/inventory}">Inventory</a>
-                                <a class="dropdown-item" th:href="@{/ad/create}">Create AD</a>
-                                <a class="dropdown-item" th:href="@{/admin}" sec:authorize="hasAuthority('ADMIN')">Admin</a>
-                            </div>
-                        </div>
-                    </form>
-                    <a sec:authorize="isAuthenticated()" class="text-success" href="javascript: document.logoutForm.submit()">Sign out</a>
-                    <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
-                        <input hidden type="submit" value="Sign Out" />
-                    </form>
+        <div style="position: relative;">
+            <img th:src="@{/assets/images/background.jpeg}" alt="Background Image" style="width: 100%; height: auto;">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-transparent" style="position: absolute; top: 0; left: 0; right: 0;">
+                <div class="container">
+                    <a class="navbar-brand" th:href="@{/}"><h3>BitDonate</h3></a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link" th:href="@{/}">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/ads}">Advertisements</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/swap}">Swap</a>
+                            </li>
+                            <li>
+                                <form class="form-inline my-2 my-md-0">
+                                    <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/login}">Login</a>
+                                    <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/register}">Register</a>
+                                    <div sec:authorize="isAuthenticated()" class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle text-success" href="#" id="da" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+                                        <div class="dropdown-menu" aria-labelledby="da">
+                                            <a class="dropdown-item text-dark" th:href="@{/inventory}">Inventory</a>
+                                            <a class="dropdown-item text-dark" th:href="@{/ad/create}">Create AD</a>
+                                            <a class="dropdown-item text-dark" th:href="@{/admin}" sec:authorize="hasAuthority('ADMIN')">Admin</a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </li>
+                            <li>
+                                <a sec:authorize="isAuthenticated()" class="text-success" href="javascript: document.logoutForm.submit()">Sign out</a>
+                                <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+                                    <input hidden type="submit" value="Sign Out" />
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
+            </nav>
+
+            <div class="container text-center" style="position: absolute; top: 50%; left: 0; right: 0; transform: translate(0, -50%);">
+                <h2 class="display-4 text-white">BitDonate</h2>
+                <p class="lead text-white">Your secure and anonymous way to donate</p>
             </div>
-        </nav>
+        </div>
     </header>
 
     <main class="content">
-        <h1>BitDonate</h1>
-        <h4>Your secure and anonymous way to donate</h4>
-        <img th:src="@{/assets/images/banner.jpeg}" alt="Donations" style="height: 500px; width: 1500px">
+        <div class="container mt-5">
+            <h2>About Us</h2>
+            <p>BitDonate, we're passionate about leveraging technology for social good. Our platform offers a secure and anonymous way for users to support charitable causes using our own cryptocurrency tokens. Whether you're drawn to humanitarian aid, environmental conservation, or community development, BitDonate provides a simple and effective way to make a difference.</p>
+            <br>
+            <p>Unlike traditional donation platforms, we don't require users to create an account. We prioritize user privacy and security by enabling donations to be made anonymously. However, for individuals seeking assistance for their charitable endeavors, account creation and verification are necessary to ensure transparency and credibility.</p>
+            <br>
+            <p>Our goal is to empower both donors and charitable organizations, fostering a global community of generosity and compassion. With BitDonate, everyone has the opportunity to contribute to meaningful causes, regardless of geographic location or financial status.</p>
+            <br>
+            <p>Join us in building a better world, one charitable donation at a time.</p>
+        </div>
+
         <h2> Latest Ads</h2>
 
         <div class="container">
@@ -70,14 +116,24 @@
             </div>
         </div>
 
+        <div class="container mt-5">
+            <h2>How To Donate</h2>
+            <p><b>Install MetaMask:</b> If you don't already have MetaMask, you can download and install it for free as a browser extension.</p>
+            <p><b>Set up your wallet:</b> After installing MetaMask, create a new wallet or connect it to your existing one.</p>
+            <p><b>Connect your wallet to our platform:</b> Click "Connect Wallet" on our website. MetaMask will automatically open, allowing you to confirm the details of your donation.</p>
+            <p><b>Confirm the transaction:</b> Review the transaction details in MetaMask and confirm the payment.</p>
+            <p><b>Thank you for your donation!:</b> Your donation will be securely and anonymously sent to the chosen charity organization.</p>
+        </div>
 
-        <div class="info">
-                <h2>Information</h2>
-                <p>This is an information section about the donation platform and its purpose.</p>
+        <div class="container mt-5">
+            <h2>Important Security Notice</h2>
+            <p><b>Protect your data:</b> Never share your private keys, passwords, or personal information. We will never ask for this information.</p>
+            <p><b>Remember, it's cryptocurrency:</b> Cryptocurrencies are volatile, and there is a risk of losing your entire investment. Be cautious and only invest what you can afford to lose.</p>
+            <p><b>Secure your private keys:</b> Your private keys are the only access to your wallet. Store them in a secure place and do not share them with anyone.</p>
         </div>
     </main>
 
-    <footer class="bg-body-tertiary text-center text-lg-start">
+    <footer class="bg-body-tertiary text-center text-lg-start" style="background: #000000;">
         <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
             &copy; 2023 BitDonate. All rights reserved.
         </div>

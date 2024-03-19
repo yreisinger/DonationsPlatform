@@ -16,9 +16,34 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
 
+  <style>
+    .login-form {
+      width: 340px;
+      margin: 50px auto;
+      font-size: 15px;
+    }
+    .login-form form {
+      margin-bottom: 15px;
+      box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+      padding: 30px;
+    }
+    .login-form h2 {
+      margin: 0 0 15px;
+    }
+    .form-control, .btn {
+      min-height: 38px;
+      border-radius: 2px;
+    }
+    .btn {
+      font-size: 15px;
+      font-weight: bold;
+    }
+  </style>
+
+
   <script>
-    var accounts;
-    let subContractAddress = "0x0fbE4fD3e68E3b2A3C34A796F76c4906Fb5Da11E";
+    var accounts
+    let subContractAddress = "0x12E202eCBf4BDc803994f74bEdb3e221B1D1dc7d"
     let subContractAbi = [
       {
         "anonymous": false,
@@ -51,25 +76,6 @@
           {
             "indexed": true,
             "internalType": "address",
-            "name": "previousOwner",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "newOwner",
-            "type": "address"
-          }
-        ],
-        "name": "OwnershipTransferred",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
             "name": "from",
             "type": "address"
           },
@@ -88,33 +94,6 @@
         ],
         "name": "Transfer",
         "type": "event"
-      },
-      {
-        "inputs": [],
-        "name": "owner",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "newOwner",
-            "type": "address"
-          }
-        ],
-        "name": "transferOwnership",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
       },
       {
         "inputs": [],
@@ -245,12 +224,7 @@
         "inputs": [
           {
             "internalType": "address",
-            "name": "from",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "to",
+            "name": "recipient",
             "type": "address"
           },
           {
@@ -260,7 +234,90 @@
           }
         ],
         "name": "transfer",
-        "outputs": [],
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "transferFrom",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "spender",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "addedValue",
+            "type": "uint256"
+          }
+        ],
+        "name": "increaseAllowance",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "spender",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "subtractedValue",
+            "type": "uint256"
+          }
+        ],
+        "name": "decreaseAllowance",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
         "stateMutability": "nonpayable",
         "type": "function"
       },
@@ -313,86 +370,102 @@
         "stateMutability": "nonpayable",
         "type": "function"
       }
-    ];
-    let provider;
+    ]
+
+    let provider
     async function connectWallet()    {
       accounts = await window.ethereum.request({method: "eth_requestAccounts"}).catch((err) => {
-        console.log(err.code);
+        console.log(err.code)
       })
 
       provider = new ethers.providers.Web3Provider(window.ethereum)
 
-      document.getElementById("connectButton").innerText = accounts[0].toString();
+      document.getElementById("connectButton").innerText = accounts[0].toString()
+      document.getElementById("connectButton").style.fontSize = '10px'
     }
 
-    async function transferContract(toAddress, amount) {
-      let subContract = new ethers.Contract(subContractAddress, subContractAbi, provider);
-      let fromAddress = accounts[0];
+    async function transferContract(recipientAddress, tokenAmount) {
+      const signer = provider.getSigner();
+      const tokenContract = new ethers.Contract(subContractAddress, subContractAbi, signer);
 
-      console.log(amount)
-
-      const signer = provider.getSigner()
-
-      const bdcWithSigner = subContract.connect(signer);
-
-      const bdc = ethers.utils.parseUnits(amount, 18);
-
-      console.log(toAddress)
-
-      bdcWithSigner.transfer(fromAddress, toAddress, bdc)
-
-      console.log("Successfully transferred")
+      try {
+        const tokenValue = ethers.utils.parseUnits(tokenAmount, 18);
+        const tx = await tokenContract.transfer(recipientAddress, tokenValue);
+        await tx.wait();
+        console.log("Tokens transferred");
+      } catch (error) {
+        console.error("Error when transferring tokens:", error);
+      }
     }
   </script>
 </head>
 <body>
-  <header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<header style="height: 30%">
+  <div style="position: relative;">
+    <img th:src="@{/assets/images/small-bg.jpg}" alt="Background Image" style="width: 100%; height: auto;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-transparent" style="position: absolute; top: 0; left: 0; right: 0;">
       <div class="container">
-        <a class="navbar-brand text-white font-weight-bold">BitDonate</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <a class="navbar-brand" th:href="@{/}"><h3>BitDonate</h3></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbar">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
               <a class="nav-link" th:href="@{/}">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" th:href="@{/ads}">Advertisements</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/swap}">Swap</a>
+            </li>
+            <li>
+              <form class="form-inline my-2 my-md-0">
+                <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/login}">Login</a>
+                <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/register}">Register</a>
+                <div sec:authorize="isAuthenticated()" class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle text-success" href="#" id="da" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+                  <div class="dropdown-menu" aria-labelledby="da">
+                    <a class="dropdown-item text-dark" th:href="@{/inventory}">Inventory</a>
+                    <a class="dropdown-item text-dark" th:href="@{/ad/create}">Create AD</a>
+                    <a class="dropdown-item text-dark" th:href="@{/admin}" sec:authorize="hasAuthority('ADMIN')">Admin</a>
+                  </div>
+                </div>
+              </form>
+            </li>
+            <li>
+              <a sec:authorize="isAuthenticated()" class="text-success" href="javascript: document.logoutForm.submit()">Sign out</a>
+              <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+                <input hidden type="submit" value="Sign Out" />
+              </form>
+            </li>
           </ul>
-          <form class="form-inline my-2 my-md-0">
-            <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/login}">Login</a>
-            <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/register}">Register</a>
-            <div sec:authorize="isAuthenticated()" class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle text-success" href="#" id="dd" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
-              <div class="dropdown-menu" aria-labelledby="dd">
-                <a class="dropdown-item" th:href="@{/inventory}">Inventory</a>
-                <a class="dropdown-item" th:href="@{/ad/create}">Create AD</a>
-                <a class="dropdown-item" th:href="@{/admin}" sec:authorize="hasAuthority('ADMIN')">Admin</a>
-              </div>
-            </div>
-          </form>
-          <a sec:authorize="isAuthenticated()" class="text-success" href="javascript: document.logoutForm.submit()">Sign out</a>
-          <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
-            <input hidden type="submit" value="Sign Out" />
-          </form>
         </div>
       </div>
     </nav>
-  </header>
+
+    <div class="container text-center" style="position: absolute; top: 75%; left: 0; right: 0; transform: translate(0, -50%);">
+      <h2 class="display-4 text-white">AD Details</h2>
+    </div>
+  </div>
+</header>
 
   <main class="content">
     <img class="card-img-top" th:src="@{${'/display/picture?id=' + currentAd.adId}}" style="width: 1500px; height: 500px">
-    <div class="button-container align-items-center justify-content-center">
-      <button id="connectButton" class="btn btn-dark" onclick="connectWallet()">Connect Wallet</button>
-      <br>
-      <div class="form-outline mt-2" data-mdb-input-init>
-        <input type="text" id="amount" class="form-control" />
-        <button class="btn btn-dark mt-2" th:attr="onclick=|transferContract('${currentAd.wallet}', amount.value)|">Donate</button>
-      </div>
+
+    <div class="login-form">
+          <div class="form-group">
+            <button id="connectButton" class="btn btn-success" onclick="connectWallet()">Connect Wallet</button>
+          </div>
+          <div class="form-group">
+            <input type="text" id="amount" min="1" step="1" class="form-control" placeholder="Amount of BDC"/>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-success mt-2" th:attr="onclick=|transferContract('${currentAd.wallet}', amount.value)|">Donate</button>
+          </div>
     </div>
+
     <div class="description-container">
       <h2>Description</h2>
       <p th:text="${currentAd.description}"></p>
@@ -400,10 +473,10 @@
     <br>
   </main>
 
-  <footer class="bg-body-tertiary text-center text-lg-start">
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-      &copy; 2023 BitDonate. All rights reserved.
-    </div>
-  </footer>
+<footer class="bg-body-tertiary text-center text-lg-start" style="background: #000000;">
+  <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+    &copy; 2023 BitDonate. All rights reserved.
+  </div>
+</footer>
 </body>
 </html>

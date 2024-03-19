@@ -54,7 +54,18 @@ public class AdvertisementController {
     }
 
     @GetMapping("/ads")
-    public String showAdsPage() {
+    public String showAdsPage(@RequestParam(required = false) String searchTerm, Model model) {
+        List<Advertisement> ads;
+
+        if (searchTerm == null || searchTerm.isEmpty()) {
+            ads = advertisementRepository.findAll();
+        } else {
+            ads = advertisementRepository.findAllByDescriptionContainingIgnoreCase(searchTerm);
+        }
+
+        model.addAttribute("ads", ads);
+        model.addAttribute("searchTerm", searchTerm);
+
         return "adList";
     }
 
@@ -98,5 +109,10 @@ public class AdvertisementController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + advertisement.getWallet() + "\"")
                 .body(advertisement.getPicture());
+    }
+
+    @GetMapping("/swap")
+    public String showSwapPage()    {
+        return "swap";
     }
 }

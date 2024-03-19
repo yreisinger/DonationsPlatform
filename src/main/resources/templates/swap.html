@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swap</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/style.css}" />
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+
+    <style>
+        .login-form {
+            width: 340px;
+            margin: 50px auto;
+            font-size: 15px;
+        }
+        .login-form form {
+            margin-bottom: 15px;
+            background: #000000;
+            box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+        .login-form h2 {
+            margin: 0 0 15px;
+        }
+        .form-control, .btn {
+            min-height: 38px;
+            border-radius: 2px;
+        }
+        .btn {
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .nav-tabs {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333333;
+            display: flex;
+            width: 100%;
+        }
+
+        .nav-tabs li {
+            flex: 1;
+        }
+
+        .nav-tabs li a {
+            display: block;
+            color: #333;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .nav-tabs li a.active {
+            background-color: #252525;
+        }
+
+        .tab-content {
+            padding: 20px;
+            background-color: #000000;
+        }
+    </style>
+
+    <script>
+        var accounts
+        let swapContractAddress = "0x0ffe614798b84EE46368BD60d3a52d4Ea5cDB537"
+        let swapContractAbi = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_bitDonateCoinAddress",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "buyer",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "ethAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "tokenAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "TokensPurchased",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "seller",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "tokenAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "ethAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "TokensSold",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "rate",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function",
+                "constant": true
+            },
+            {
+                "inputs": [],
+                "name": "token",
+                "outputs": [
+                    {
+                        "internalType": "contract BitDonateCoin",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function",
+                "constant": true
+            },
+            {
+                "inputs": [],
+                "name": "buyTokens",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function",
+                "payable": true
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_tokenAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "sellTokens",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_newRate",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setRate",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ]
+        let mainContractAddress = "0x12E202eCBf4BDc803994f74bEdb3e221B1D1dc7d"
+        let mainContractAbi = [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Approval",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Transfer",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "name",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function",
+                "constant": true
+            },
+            {
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function",
+                "constant": true
+            },
+            {
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function",
+                "constant": true
+            },
+            {
+                "inputs": [],
+                "name": "totalSupply",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function",
+                "constant": true
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "account",
+                        "type": "address"
+                    }
+                ],
+                "name": "balanceOf",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function",
+                "constant": true
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    }
+                ],
+                "name": "allowance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function",
+                "constant": true
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "approve",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "recipient",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "recipient",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transferFrom",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "addedValue",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "increaseAllowance",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "subtractedValue",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "decreaseAllowance",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "mint",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "burn",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "account",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "burnFrom",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ]
+
+        let provider
+        async function connectWallet(buttonId)    {
+            accounts = await window.ethereum.request({method: "eth_requestAccounts"}).catch((err) => {
+                console.log(err.code)
+            })
+
+            provider = new ethers.providers.Web3Provider(window.ethereum)
+
+            document.getElementById(buttonId.id).innerText = accounts[0].toString()
+            document.getElementById(buttonId.id).style.fontSize = '10px'
+        }
+
+        async function swapEthForTokens(etherAmount) {
+            const signer = provider.getSigner()
+            const swapContract = new ethers.Contract(swapContractAddress, swapContractAbi, signer)
+            const ethValue = ethers.utils.parseEther(etherAmount)
+
+            try {
+                const tx = await swapContract.buyTokens({ value: ethValue })
+                await tx.wait()
+                console.log("Tokens purchased")
+            } catch (error) {
+                console.error("Error when purchasing tokens:", error)
+            }
+        }
+
+        async function swapTokensForEth(tokenAmount) {
+            const signer = provider.getSigner()
+            const swapContract = new ethers.Contract(swapContractAddress, swapContractAbi, signer)
+            const tokenContract = new ethers.Contract(mainContractAddress, mainContractAbi, signer)
+
+            try {
+                const allowance = await tokenContract.allowance(signer.getAddress(), swapContractAddress)
+                const tokenValue = ethers.utils.parseUnits(tokenAmount, 18)
+
+                if (allowance.lt(tokenValue)) {
+                    const approveTx = await tokenContract.approve(swapContractAddress, tokenValue)
+                    await approveTx.wait()
+                    console.log("Token authorisation granted")
+                }
+
+                const tx = await swapContract.sellTokens(tokenValue)
+                await tx.wait()
+                console.log("Tokens sold")
+            } catch (error) {
+                console.error("Error when selling tokens:", error)
+            }
+        }
+    </script>
+</head>
+<body>
+<header style="height: 30%">
+    <div style="position: relative;">
+        <img th:src="@{/assets/images/small-bg.jpg}" alt="Background Image" style="width: 100%; height: auto;">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-transparent" style="position: absolute; top: 0; left: 0; right: 0;">
+            <div class="container">
+                <a class="navbar-brand" th:href="@{/}"><h3>BitDonate</h3></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" th:href="@{/}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/ads}">Advertisements</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/swap}">Swap</a>
+                        </li>
+                        <li>
+                            <form class="form-inline my-2 my-md-0">
+                                <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/login}">Login</a>
+                                <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/register}">Register</a>
+                                <div sec:authorize="isAuthenticated()" class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-success" href="#" id="da" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+                                    <div class="dropdown-menu" aria-labelledby="da">
+                                        <a class="dropdown-item text-dark" th:href="@{/inventory}">Inventory</a>
+                                        <a class="dropdown-item text-dark" th:href="@{/ad/create}">Create AD</a>
+                                        <a class="dropdown-item text-dark" th:href="@{/admin}" sec:authorize="hasAuthority('ADMIN')">Admin</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </li>
+                        <li>
+                            <a sec:authorize="isAuthenticated()" class="text-success" href="javascript: document.logoutForm.submit()">Sign out</a>
+                            <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+                                <input hidden type="submit" value="Sign Out" />
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container text-center" style="position: absolute; top: 75%; left: 0; right: 0; transform: translate(0, -50%);">
+            <h2 class="display-4 text-white">Swap</h2>
+        </div>
+    </div>
+</header>
+
+<main class="content">
+    <div class="login-form">
+            <ul class="nav nav-tabs">
+                <li class="active"><a class="text-white" data-toggle="tab" href="#menu1"><b>ETH TO BDC</b></a></li>
+                <li><a class="text-white" data-toggle="tab" href="#menu2"><b>BDC TO ETH</b></a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div id="menu1" class="tab-pane fade active show">
+                    <br>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-block" id="ETHConnect" onclick="connectWallet(ETHConnect)">Connect Wallet</button>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" min="0.001" step="0.001" class="form-control" placeholder="ETH" id="amountETH" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-block" onclick="swapEthForTokens(amountETH.value)">SWAP to BDC</button>
+                    </div>
+                </div>
+                <div id="menu2" class="tab-pane fade">
+                    <br>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-block" id="BDCConnect" onclick="connectWallet(BDCConnect)">Connect Wallet</button>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" min="1" step="1" class="form-control" placeholder="BDC" id="amountBDC" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-block" onclick="swapTokensForEth(amountBDC.value)">SWAP to ETH</button>
+                    </div>
+                </div>
+            </div>
+    </div>
+</main>
+
+<footer class="bg-body-tertiary text-center text-lg-start fixed-bottom" style="background: #000000;">
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+        &copy; 2023 BitDonate. All rights reserved.
+    </div>
+</footer>
+</body>
+</html>

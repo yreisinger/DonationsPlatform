@@ -15,42 +15,56 @@
 
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<header style="height: 30%">
+    <div style="position: relative;">
+        <img th:src="@{/assets/images/small-bg.jpg}" alt="Background Image" style="width: 100%; height: auto;">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-transparent" style="position: absolute; top: 0; left: 0; right: 0;">
             <div class="container">
-                <a class="navbar-brand text-white font-weight-bold">BitDonate</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" th:href="@{/}"><h3>BitDonate</h3></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbar">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item active">
                             <a class="nav-link" th:href="@{/}">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{/ads}">Advertisements</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/swap}">Swap</a>
+                        </li>
+                        <li>
+                            <form class="form-inline my-2 my-md-0">
+                                <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/login}">Login</a>
+                                <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/register}">Register</a>
+                                <div sec:authorize="isAuthenticated()" class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-success" href="#" id="da" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+                                    <div class="dropdown-menu" aria-labelledby="da">
+                                        <a class="dropdown-item text-dark" th:href="@{/inventory}">Inventory</a>
+                                        <a class="dropdown-item text-dark" th:href="@{/ad/create}">Create AD</a>
+                                        <a class="dropdown-item text-dark" th:href="@{/admin}" sec:authorize="hasAuthority('ADMIN')">Admin</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </li>
+                        <li>
+                            <a sec:authorize="isAuthenticated()" class="text-success" href="javascript: document.logoutForm.submit()">Sign out</a>
+                            <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+                                <input hidden type="submit" value="Sign Out" />
+                            </form>
+                        </li>
                     </ul>
-                    <form class="form-inline my-2 my-md-0">
-                        <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/login}">Login</a>
-                        <a sec:authorize="isAnonymous()" class="nav-link text-success" th:href="@{/register}">Register</a>
-                        <div sec:authorize="isAuthenticated()" class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-success" href="#" id="dd" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
-                            <div class="dropdown-menu" aria-labelledby="dd">
-                                <a class="dropdown-item" th:href="@{/inventory}">Inventory</a>
-                                <a class="dropdown-item" th:href="@{/ad/create}">Create AD</a>
-                                <a class="dropdown-item" th:href="@{/admin}" sec:authorize="hasAuthority('ADMIN')">Admin</a>
-                            </div>
-                        </div>
-                    </form>
-                    <a sec:authorize="isAuthenticated()" class="text-success" href="javascript: document.logoutForm.submit()">Sign out</a>
-                    <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
-                        <input hidden type="submit" value="Sign Out" />
-                    </form>
                 </div>
             </div>
         </nav>
-    </header>
+
+        <div class="container text-center" style="position: absolute; top: 75%; left: 0; right: 0; transform: translate(0, -50%);">
+            <h2 class="display-4 text-white">Admin Panel</h2>
+        </div>
+    </div>
+</header>
 
     <main class="content">
         <table class="table">
@@ -84,10 +98,10 @@
         </table>
     </main>
 
-    <footer class="bg-body-tertiary text-center text-lg-start">
-        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-            &copy; 2023 BitDonate. All rights reserved.
-        </div>
-    </footer>
+<footer class="bg-body-tertiary text-center text-lg-start" style="background: #000000;">
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+        &copy; 2023 BitDonate. All rights reserved.
+    </div>
+</footer>
 </body>
 </html>
