@@ -115,4 +115,9 @@ public class AdvertisementController {
     public String showSwapPage()    {
         return "swap";
     }
+
+    @GetMapping("/faq")
+    public String showFAQPage() {
+        return "faq";
+    }
 }

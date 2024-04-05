@@ -5,40 +5,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create AD</title>
+  <title>FAQ</title>
   <link rel="stylesheet" type="text/css" th:href="@{/assets/css/style.css}" />
 
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
 
   <style>
-    .login-form {
-      width: 340px;
-      margin: 50px auto;
-      font-size: 15px;
+    .nav-tabs {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #333333;
+      display: flex;
+      width: 100%;
     }
-    .login-form form {
-      margin-bottom: 15px;
-      box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-      padding: 30px;
+
+    .nav-tabs li {
+      flex: 1;
     }
-    .login-form h2 {
-      margin: 0 0 15px;
+
+    .nav-tabs li a {
+      display: block;
+      color: #333;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      transition: background-color 0.3s;
     }
-    .form-control, .btn {
-      min-height: 38px;
-      border-radius: 2px;
+
+    .nav-tabs li a.active {
+      background-color: #252525;
     }
-    .btn {
-      font-size: 15px;
-      font-weight: bold;
+
+    .tab-content {
+      padding: 20px;
+      background-color: #000000;
     }
   </style>
 </head>
 <body>
-<header style="height: 30%">
+<header style="height: 27%">
   <div style="position: relative;">
     <img th:src="@{/assets/images/small-bg.jpg}" alt="Background Image" style="width: 100%; height: auto;">
     <nav class="navbar navbar-expand-lg navbar-dark bg-transparent" style="position: absolute; top: 0; left: 0; right: 0;">
@@ -87,59 +98,44 @@
     </nav>
 
     <div class="container text-center" style="position: absolute; top: 75%; left: 0; right: 0; transform: translate(0, -50%);">
-      <h2 class="display-4 text-white">Create AD</h2>
+      <h2 class="display-4 text-white">Frequently Asked Questions</h2>
     </div>
   </div>
 </header>
 
-  <main class="content">
-    <div th:if="${currentRequester.isVerified() == true && currentRequester.getVerifyDocument() != null}">
-      <div class="col-md-6 offset-md-3 mt-5">
-        <form class="form-group" method="post" th:action="@{/api/ad/create}" th:object="${advertisement}" enctype="multipart/form-data">
-          <div class="form-group">
-            <label for="description">Description</label>
-            <input type="text" name="description" class="form-control" id="description" th:field="*{description}" placeholder="Enter the description" required>
-          </div>
-          <div class="form-group">
-            <label for="wallet">Wallet</label>
-            <input type="text" name="wallet" class="form-control" id="wallet"  th:field="*{wallet}" placeholder="Enter wallet" required>
-          </div>
-          <hr>
-          <div class="form-group mt-3">
-            <label class="mr-2">Upload your Picture</label>
-            <input type="file" name="file" required>
-          </div>
-          <hr>
-          <button type="submit" class="btn btn-success">Submit</button>
-          <div class="alert alert-danger" th:if="${showAdError == true}" role="alert">
-            The ad data is not correct
-          </div>
-          <div class="alert alert-danger" th:if="${showRequesterError == true}" role="alert">
-            Unfortunately you are not verified, so you are not authorised to create an ad
-          </div>
-        </form>
-      </div>
-    </div>
-    <div th:if="${currentRequester.isVerified() == false && currentRequester.getVerifyDocument() == null}">
-      <form class="form-group" method="get" th:action="@{/verify}">
-          <div class="form-group">
-            <h4>You must verify yourself to be allowed to post</h4>
-          </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-success">Verify</button>
-          </div>
-      </form>
-    </div>
-    <div th:if="${currentRequester.isVerified() == false && currentRequester.getVerifyDocument() != null}">
-      <form class="form-group" method="get" th:action="@{/verify}">
-        <div class="form-group">
-          <h4>You have already uploaded your document, please wait until you have been manually verified</h4>
-        </div>
-      </form>
-    </div>
-  </main>
+<main class="content">
+  <div class="container">
+    <h2>How To Donate?</h2>
+    <p><b>Install MetaMask:</b> If you don't already have MetaMask, you can download and install it for free as a browser extension.</p>
+    <p><b>Set up your wallet:</b> After installing MetaMask, create a new wallet or connect it to your existing one.</p>
+    <p><b>Connect your wallet to our platform:</b> Click "Connect Wallet" on our website. MetaMask will automatically open, allowing you to confirm the details of your wallet.</p>
+    <p><b>Input Amount:</b> You will be asked to enter the number of BDC tokens you would like to donate. Once you have entered this, you can click on the Donate button.</p>
+    <p><b>Confirm the transaction:</b> Review the transaction details in MetaMask and confirm the payment.</p>
+    <p><b>Thank you for your donation!:</b> Your donation will be securely and anonymously sent to the chosen charity project.</p>
+  </div>
+  <div class="container mt-5">
+    <h2>How To Create An AD?</h2>
+    <p><b>Create an Account:</b> To create an Advertisement you must first create an account or log in to your existing account.</p>
+    <p><b>Verify yourself:</b> If you have not yet verified yourself, you must upload a verification document and wait for manual verification.</p>
+    <p><b>Create an AD:</b> You can start by creating an advert, for which you need a description, wallet ID and, if possible, a picture.</p>
+  </div>
+  <div class="container mt-5">
+    <h2>How To Create An Account?</h2>
+    <p><b>Create an Account:</b> If you don't have an account yet, you can easily create one by clicking on the "Register" navbar item.</p>
+    <p><b>Input Data:</b> You will be asked to enter your username and password. Please use a unique username to avoid errors.</p>
+    <p><b>Login:</b> To log in to your account you have to click on the navbar item "Login" and enter your previously entered data.</p>
+  </div>
+  <div class="container mt-5">
+    <h2>How To SWAP Tokens?</h2>
+    <p><b>SWAP Tokens:</b> To swap tokens you have to click on the navbar item "Swap".</p>
+    <p><b>Connect your wallet to our platform:</b> Click "Connect Wallet" on our website. MetaMask will automatically open, allowing you to confirm the details of your wallet.</p>
+    <p><b>Input Amount:</b> You will be asked to enter the number of BDC or ETH you want to use for the swap. After that you can click on the SWAP button.</p>
+    <p><b>Confirm the transaction:</b> Review the transaction details in MetaMask and confirm the swap.</p>
+    <p><b>Exchanged tokens:</b> The exchanged tokens should then be displayed in your wallet in a few seconds.</p>
+  </div>
+</main>
 
-<footer class="bg-body-tertiary text-center text-lg-start fixed-bottom" style="background: #000000;">
+<footer class="bg-body-tertiary text-center text-lg-start" style="background: #000000;">
   <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
     &copy; 2024 BitDonate. All rights reserved.
   </div>
