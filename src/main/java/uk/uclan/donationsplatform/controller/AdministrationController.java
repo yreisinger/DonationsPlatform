@@ -70,23 +70,23 @@ public class AdministrationController {
 
     @PostMapping("/auth/register")
     public String registerRequester(@ModelAttribute AdministrationDTO administrationDTO, Model model)   {
-            Optional<Requester> optionalRequester = requesterRepository.findByUsernameContainingIgnoreCase(administrationDTO.getUsername());
+        Optional<Requester> optionalRequester = requesterRepository.findByUsernameContainingIgnoreCase(administrationDTO.getUsername());
 
-            if(optionalRequester.isEmpty())   {
-                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if(optionalRequester.isEmpty())   {
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-                Requester requester = new Requester(administrationDTO.getUsername(), encoder.encode(administrationDTO.getPassword()));
+            Requester requester = new Requester(administrationDTO.getUsername(), encoder.encode(administrationDTO.getPassword()));
 
-                requester.getAuthorities().add(roleRepository.findRoleByAuthority("CREATOR").get());
+            requester.getAuthorities().add(roleRepository.findRoleByAuthority("CREATOR").get());
 
-                requesterRepository.save(requester);
+            requesterRepository.save(requester);
 
-                return "redirect:/";
-            }else {
-                model.addAttribute("showError", true);
+            return "redirect:/";
+        }else {
+            model.addAttribute("showError", true);
 
-                return "register";
-            }
+            return "register";
+        }
     }
 
     @PostMapping("/auth/verify")
@@ -99,7 +99,7 @@ public class AdministrationController {
             requesterRepository.save(requester);
 
             return "redirect:/";
-        }catch (Exception ex)   {
+        } catch (Exception ex)   {
             return "verify";
         }
     }
@@ -124,7 +124,7 @@ public class AdministrationController {
 
             return "redirect:/admin";
         }catch (Exception ex)   {
-            return "redirect:/";
+            return "admin";
         }
     }
 

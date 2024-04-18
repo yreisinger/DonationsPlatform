@@ -87,7 +87,6 @@ public class Requester implements UserDetails {
         return true;
     }
 
-    //Function to verify the user with the document
     @Override
     public boolean isEnabled() {
         return true;

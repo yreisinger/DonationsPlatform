@@ -21,13 +21,13 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
 @CrossOrigin("*")
 public class AdvertisementController {
-
     private final AdvertisementRepository advertisementRepository;
 
     private final RequesterRepository requesterRepository;
@@ -80,9 +80,11 @@ public class AdvertisementController {
     public String showAdDetails(Model model, @PathVariable("id") Integer id)   {
         if(advertisementRepository.findById(id).isPresent())  {
             model.addAttribute("currentAd", advertisementRepository.findById(id).get());
+        }else {
+            return "home";
         }
 
-        return "adDetails";
+        return "redirect:/adDetails";
     }
 
     @GetMapping("/inventory")
@@ -94,12 +96,16 @@ public class AdvertisementController {
 
     @PostMapping("/api/ad/create")
     public String createAd(@ModelAttribute Advertisement advertisement, @RequestParam MultipartFile file, Principal principal, Model model) throws IOException {
-        advertisement.setPicture(file.getBytes());
-        advertisement.setRequester(requesterRepository.findByUsername(principal.getName()).get());
+        try {
+            advertisement.setPicture(file.getBytes());
+            advertisement.setRequester(requesterRepository.findByUsername(principal.getName()).get());
 
-        advertisementRepository.save(advertisement);
+            advertisementRepository.save(advertisement);
 
-        return "redirect:/inventory";
+            return "redirect:/inventory";
+        } catch (Exception ex)   {
+            return "adCreate";
+        }
     }
 
     @GetMapping("/display/picture")

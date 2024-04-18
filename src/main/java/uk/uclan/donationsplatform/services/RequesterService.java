@@ -15,6 +15,6 @@ public class RequesterService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return requesterRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("requester not valid"));
+        return requesterRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Requester not valid"));
     }
 }

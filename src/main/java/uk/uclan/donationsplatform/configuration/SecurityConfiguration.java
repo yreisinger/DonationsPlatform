@@ -38,7 +38,7 @@ public class SecurityConfiguration {
                 })
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers("/ad/create", "/inventory", "/api/ad/create", "/auth/verify").authenticated();
-                    req.requestMatchers("/admin/*", "/display/verifyDocument").hasAuthority("ADMIN");
+                    req.requestMatchers( "/admin", "/admin/verify", "/display/verifyDocument").hasAuthority("ADMIN");
                     req.anyRequest().permitAll();
                 })
                 .userDetailsService(requesterService)
