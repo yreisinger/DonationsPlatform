@@ -84,7 +84,7 @@ public class AdvertisementController {
             return "home";
         }
 
-        return "redirect:/adDetails";
+        return "adDetails";
     }
 
     @GetMapping("/inventory")

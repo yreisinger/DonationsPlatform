@@ -88,7 +88,10 @@
                     <div class="card h-100 text-black">
                         <div class="card-body">
                             <img class="card-img-top" th:src="@{${'/display/picture?id=' + i.adId}}">
-                            <h3 class="card-title" th:text="${i.description}"></h3>
+                            <h5 th:with="words=${#strings.arraySplit(i.description, ' ')}">
+                                <span th:if="${#arrays.length(words) >= 5}" th:text="${words[0] + ' ' + words[1] + ' ' + words[2] + ' ' + words[3] + ' ' + words[4]}"></span>
+                                <span th:if="${#arrays.length(words) < 5}" th:text="${#strings.arrayJoin(words, ' ')}"></span>
+                            </h5>
                             <a class="btn btn-outline-dark" th:href="@{'/ad/' + ${i.adId}}">Visit</a>
                         </div>
                     </div>
